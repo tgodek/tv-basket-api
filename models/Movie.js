@@ -16,7 +16,6 @@ const movieSchema = mongoose.Schema({
     },
     releaseDate: {
         type: Date,
-        required: true
     },
     poster: {
         type: String
@@ -60,7 +59,7 @@ const movieSchema = mongoose.Schema({
         }
     ],
     budget: {
-        type: Decimal128
+        type: Number
     }
 });
 

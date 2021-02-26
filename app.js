@@ -5,12 +5,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/user');
+const movieRoutes = require('./routes/movie');
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 
 app.use('/users', userRoutes);
+app.use('/movies', movieRoutes);
 
 mongoose.connect(
     process.env.DB_CONNECTION, 
@@ -34,5 +36,5 @@ app.listen(PORT,
 
 //home route
 app.get('/', (req, res) => {
-    res.send('Hello 1');
+    res.send('TV Basket home route');
 });
