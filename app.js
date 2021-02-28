@@ -1,11 +1,10 @@
-require('dotenv/config');
-
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/user');
 const movieRoutes = require('./routes/movie');
+require('dotenv/config');
+const cors = require('cors');
 const app = express();
 
 app.use(cors());
@@ -31,8 +30,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT,
   console.log(`Server running mode on port ${PORT}`)
 );
-
-
 
 //home route
 app.get('/', (req, res) => {
