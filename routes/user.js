@@ -65,14 +65,33 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
+        const email = req.body.email;
+        const username = req.body.username;
+        var data;
 
-        const user = await User.findOne({username:req.body.username});
-
-        if(user) {
-            res.json(user);
-        } else {
-            res.send("no matches");
+        if(email){
+           data = {
+               email: email
+           }
         }
+        else if(username){
+            data = {
+                username: username
+            }
+        }
+
+        if(data){
+            const check = await User.findOne(data);
+            if(check){
+                const validPass = await bcrypt.compare(req.body.password, check.password);
+                if(!validPass) return res.status(400).send("No matches");
+                return res.status(200).send("Logged in");
+            }
+            return res.status(400).send("No matches");
+        }
+
+        res.status(400).send("No matches");
+
     } catch (e) {
         res.send(e);
     }
