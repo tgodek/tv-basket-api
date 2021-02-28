@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Movie = require('../models/Movie');
+const verifiy = require('./verifyToken');
 
-router.get('/', async (req, res) => {
+router.get('/', verifiy ,async (req, res) => {
     try {
         const allMovies = await Movie.find(); 
         res.json(allMovies);
