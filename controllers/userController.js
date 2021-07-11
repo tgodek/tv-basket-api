@@ -8,6 +8,12 @@ module.exports.all_users_get = async (_, res) => {
   res.status(200).json(users);
 };
 
+module.exports.me_get = async (req, res) => {
+  const me = await User.findOne({ _id: req.user });
+  if (me.length == 0) return res.send("Can't find you :(");
+  res.status(200).json(me);
+};
+
 module.exports.register_post = async (req, res) => {
   try {
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
