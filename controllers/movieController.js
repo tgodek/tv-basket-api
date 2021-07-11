@@ -16,7 +16,7 @@ module.exports.new_movie_post = async (req, res) => {
   }
 };
 
-module.exports.all_movies_get = async (req, res) => {
+module.exports.all_movies_get = async (_, res) => {
   try {
     const allMovies = await Movie.find();
     res.json(allMovies);
