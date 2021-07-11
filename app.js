@@ -1,32 +1,29 @@
-require('dotenv/config');
-
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
+const userRoutes = require("./routes/userRoutes");
+const movieRoutes = require("./routes/movieRoutes");
+require("dotenv").config();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const app = express();
+const database = require("./config/database");
 
-mongoose.connect(
-    process.env.DB_CONNECTION, 
-    {useNewUrlParser: true, useUnifiedTopology: true}
+app.use(
+  cors({
+    origin: ["http://localhost:3001"],
+  })
 );
 
-var db = mongoose.connection;
+database.connection();
 
-db.once('open', () => {
-    console.log("Connected to DB");
+app.use(express.json());
+app.use(cookieParser());
+//home route
+app.get("/", (_, res) => {
+  res.send("TV Basket home page");
 });
 
-db.on('error', console.error.bind(console, 'Error connecting to database'));
+app.use("/users", userRoutes);
+app.use("/movies", movieRoutes);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT,
-  console.log(`Server running mode on port ${PORT}`)
-);
-
-
-
-//rute
-app.get('/', (req, res) => {
-    res.send('Hello 1');
-});
-
-app.listen(3000);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, console.log(`Server running on port ${PORT}`));

@@ -1,7 +1,7 @@
 {
   "name": "tv-basket-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "TV Basket REST API",
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js"
@@ -18,9 +18,14 @@
   },
   "homepage": "https://github.com/tgodek/tv-basket-api#readme",
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^5.11.15",
-    "nodemon": "^2.0.7"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.2",
+    "nodemon": "^2.0.11"
   }
 }
