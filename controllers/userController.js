@@ -1,6 +1,10 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const {
+  createAccessToken,
+  createRefreshToken,
+} = require("../helper/createToken");
+const { sendRefreshToken } = require("../helper/sendRefreshToken");
 
 module.exports.all_users_get = async (_, res) => {
   const users = await User.find();
@@ -10,7 +14,7 @@ module.exports.all_users_get = async (_, res) => {
 
 module.exports.me_get = async (req, res) => {
   const me = await User.findOne({ _id: req.user });
-  if (me.length == 0) return res.send("Can't find you :(");
+  if (!me) return res.send("Can't find you :(");
   res.status(200).json(me);
 };
 
@@ -86,18 +90,16 @@ module.exports.login_post = async (req, res) => {
     }
 
     if (data) {
-      const check = await User.findOne(data);
-      if (check) {
+      const user = await User.findOne(data);
+      if (user) {
         const validPass = await bcrypt.compare(
           req.body.password,
-          check.password
+          user.password
         );
         if (!validPass) return res.status(400).send("No matches");
 
-        //create token
-        const token = jwt.sign({ id: check._id }, process.env.TOKEN_SECRET, {
-          expiresIn: "1h",
-        });
+        sendRefreshToken(res, createRefreshToken(user));
+        const token = createAccessToken(user);
 
         return res
           .cookie("jid", token, { httpOnly: true })
@@ -111,4 +113,14 @@ module.exports.login_post = async (req, res) => {
   } catch (e) {
     res.send(e);
   }
+};
+
+module.exports.revokeRefreshTokenForUser = (req, res) => {
+  const userId = req.query.id;
+
+  User.findById(userId, function (err, doc) {
+    if (err) console.log(err);
+    doc.tokenVersion += 1;
+    doc.save();
+  });
 };
