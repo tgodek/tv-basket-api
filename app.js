@@ -16,6 +16,7 @@ const { sendRefreshToken } = require("./helper/sendRefreshToken");
 
 app.use(
   cors({
+    credentials: true,
     origin: ["http://localhost:3001"],
   })
 );
