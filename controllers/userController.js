@@ -101,10 +101,7 @@ module.exports.login_post = async (req, res) => {
         sendRefreshToken(res, createRefreshToken(user));
         const token = createAccessToken(user);
 
-        return res
-          .cookie("jid", token, { httpOnly: true })
-          .status(200)
-          .send("Logged in");
+        return res.status(200).send({ accessToken: token });
       }
       return res.status(400).send("No matches");
     }
