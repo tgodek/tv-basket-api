@@ -4,12 +4,8 @@ const authController = require("../middleware/auth");
 
 const router = Router();
 
-router.get("/", authController.verifyToken, movieController.all_movies_get);
-router.get(
-  "/popularMovies",
-  authController.verifyToken,
-  movieController.popular_movie_get
-);
-router.post("/", authController.verifyToken, movieController.new_movie_post);
+router.post("/", authController.verifyToken, movieController.discover_movies_post);
+router.post("/top", authController.verifyToken, movieController.top_movies_post);
+router.post("/popular", authController.verifyToken, movieController.popular_movies_post);
 
 module.exports = router;
