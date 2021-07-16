@@ -9,7 +9,7 @@ module.exports.top_movies_post = async (req, res) => {
   try {
     const args = {
       query: {
-        page: req.body.page, //getting page body value from POST method, TMDB has it's own pagination which passes through our backend
+        page: req.body.page,
         limit: 5,
       },
     };
@@ -34,7 +34,7 @@ module.exports.popular_movies_post = async (req, res) => {
   }
 };
 
-module.exports.discover_movies_post = async(req, res) => {
+module.exports.discover_movies_post = async (req, res) => {
   try {
     const args = {
       query: {
@@ -48,6 +48,34 @@ module.exports.discover_movies_post = async(req, res) => {
   }
 };
 
+module.exports.movie_info = async (req, res) => {
+  try {
+    const args = {
+      pathParameters: {
+        movie_id: req.body.id,
+      }
+    };
+    const discoverMovies = await mdb.movie.getDetails(args);
+    res.json(discoverMovies);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.movie_search = async (req, res) => {
+  try {
+    const args = {
+      query: {
+        query: req.body.query,
+        page: req.body.page,
+      }
+    };
+    const discoverMovies = await mdb.search.movies(args);
+    res.json(discoverMovies);
+  } catch (e) {
+    res.send(e);
+  }
+};
 
 //this function is probably no more needed since with this version
 //we started using TMDb API
