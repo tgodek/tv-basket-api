@@ -5,40 +5,11 @@ const MovieDB = require("node-themoviedb");
 
 const mdb = new MovieDB(process.env.API_KEY)
 
-module.exports.top_movies_post = async (req, res) => {
+module.exports.discover_movies_get = async (req, res) => {
   try {
     const args = {
       query: {
-        page: req.body.page,
-        limit: 5,
-      },
-    };
-    const popularMovies = await mdb.movie.getTopRated(args);
-    res.json(popularMovies);
-  } catch (e) {
-    res.send(e);
-  }
-};
-
-module.exports.popular_movies_post = async (req, res) => {
-  try {
-    const args = {
-      query: {
-        page: req.body.page,
-      },
-    };
-    const popularMovies = await mdb.movie.getPopular(args);
-    res.json(popularMovies);
-  } catch (e) {
-    res.send(e);
-  }
-};
-
-module.exports.discover_movies_post = async (req, res) => {
-  try {
-    const args = {
-      query: {
-        page: req.body.page,
+        page: req.query.page,
       }
     };
     const discoverMovies = await mdb.discover.movie(args);
@@ -48,11 +19,39 @@ module.exports.discover_movies_post = async (req, res) => {
   }
 };
 
+module.exports.top_movies_get = async (req, res) => {
+  try {
+    const args = {
+      query: {
+        page: req.query.page,
+      },
+    };
+    const popularMovies = await mdb.movie.getTopRated(args);
+    res.json(popularMovies);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.popular_movies_get = async (req, res) => {
+  try {
+    const args = {
+      query: {
+        page: req.query.page,
+      },
+    };
+    const popularMovies = await mdb.movie.getPopular(args);
+    res.json(popularMovies);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
 module.exports.movie_info = async (req, res) => {
   try {
     const args = {
       pathParameters: {
-        movie_id: req.body.id,
+        movie_id: req.query.id,
       }
     };
     const discoverMovies = await mdb.movie.getDetails(args);
@@ -66,8 +65,8 @@ module.exports.movie_search = async (req, res) => {
   try {
     const args = {
       query: {
-        query: req.body.query,
-        page: req.body.page,
+        query: req.query.query,
+        page: req.query.page,
       }
     };
     const discoverMovies = await mdb.search.movies(args);
