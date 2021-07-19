@@ -1,7 +1,5 @@
 require("dotenv").config();
-const Movie = require("../models/Movie");
 const User = require("../models/User");
-const userController = require("../controllers/userController");
 const MovieDB = require("node-themoviedb");
 
 const mdb = new MovieDB(process.env.API_KEY)
@@ -62,26 +60,21 @@ module.exports.movie_info = async (req, res) => {
   }
 };
 
-module.exports.movie_search = async (req, res) => {
-  try {
-    const args = {
-      query: {
-        query: req.query.query,
-        page: req.query.page,
-      }
-    };
-    const discoverMovies = await mdb.search.movies(args);
-    res.json(discoverMovies);
-  } catch (e) {
-    res.send(e);
-  }
-};
-
 module.exports.movie_add_to_watchlist = async (req, res) => {
   try {
-    var loggedIn = await User.find({ _id: req.body.user});
-    var movie = req.body.movie;
+    const me = await User.findOne({ _id: req.body.userId });
+    const movie = req.body.movieId;
+    const movieWatchlist = me.watchlistMovies;
 
+    if(!movieWatchlist.includes(movie)) {
+      me.watchlistMovies.push(movie);
+      me.save(function (err) {
+      if(err) res.send(err);
+      else res.status(201).send("Movie added to watchlist!");
+     });
+    } else {
+      res.status(400).send("Movie already added to watchlist!")
+    }
   } catch (e) {
     res.send(e);
   }
@@ -91,34 +84,68 @@ module.exports.movie_add_to_tracked = async (req, res) => {
   try {
     const me = await User.findOne({ _id: req.body.userId });
     const movie = req.body.movieId;
+    const trackedMovieList = me.trackedMovies;
 
-    //TODO check if movie is already in the list
-    me.trackedMovies.push(movie);
-    me.save(function (err, result) {
-      if(err) res.send(err);
-      else res.send("Movie marked as watched!");
-    });
+    //need also make that watchlist and tracked movies are 2 exclusive list
+    //this means that the same movie cannot be in both lists at the same time
+    /***********************************************************************/
+    //we can make something like, if a user wants to add a movie to watchlist
+    //and the movie is in movies tracked list, remove it from that, and add it to
+    //watchlist, same for opposite case
+    /***********************************************************************/
+    //this can also be applied to the function that starts on line 80
+    if(!trackedMovieList.includes(movie)) {
+      me.trackedMovies.push(movie);
+      me.save(function (err) {
+        if(err) res.send(err);
+        else res.status(201).send("Movie marked as watched!");
+      });
+    } else {
+      res.status(400).send("Movie already marked as watched!")
+    }
   } catch (e) {
     res.send(e);
   }
 };
 
-//this function is probably no more needed since with this version
-//we started using TMDb API
-//this function used to creat/add new movies to our movie database
-//since adding movies/shows is really tedious job
-/*module.exports.new_movie_post = async (req, res) => {
+module.exports.movie_remove_from_watchlist = async (req, res) => {
   try {
-    const movie = new Movie({
-      title: req.body.title,
-      description: req.body.description,
-      releaseDate: req.body.releaseDate,
-      poster: req.body.poster,
-    });
+    const me = await User.findOne({ _id: req.body.userId });
+    const movie = req.body.movieId;
+    const movieWatchlist = me.watchlistMovies;
+    
+    if(movieWatchlist.includes(movie)) {
+      me.movieWatchlist.pull(movie);
+      me.save(function (err) {
+        if(err) res.send(err);
+        else res.status(201).send("Movie removed from watchlist!");
+      });
+    } else {
+      res.status(400).send("Movie isn't in a watchlist yet!")
+    }
 
-    const newMovie = await movie.save();
-    res.json(newMovie);
   } catch (e) {
     res.send(e);
   }
-};*/
+};
+
+module.exports.movie_remove_from_tracked = async (req, res) => {
+  try {
+    const me = await User.findOne({ _id: req.body.userId });
+    const movie = req.body.movieId;
+    const trackedMovieList = me.trackedMovies;
+
+    if(trackedMovieList.includes(movie)) {
+      me.trackedMovies.pull(movie);
+      me.save(function (err) {
+        if(err) res.send(err);
+        else res.status(201).send("Movie removed from watched list!");
+      });
+    } else {
+      res.status(400).send("Movie isn't marked as watched yet!")
+    }
+
+  } catch (e) {
+    res.send(e);
+  }
+};
