@@ -1,6 +1,7 @@
 require("dotenv").config();
 const User = require("../models/User");
 const MovieDB = require("node-themoviedb");
+const movieHelper = require("../helper/movieHelper");
 
 const mdb = new MovieDB(process.env.API_KEY)
 
@@ -62,19 +63,23 @@ module.exports.movie_info = async (req, res) => {
 
 module.exports.movie_add_to_watchlist = async (req, res) => {
   try {
-    const me = await User.findOne({ _id: req.body.userId });
+    const loggedInUser = req.body.userId;
     const movie = req.body.movieId;
-    const movieWatchlist = me.watchlistMovies;
+    const operation = 1;
 
-    if(!movieWatchlist.includes(movie)) {
-      me.watchlistMovies.push(movie);
-      me.save(function (err) {
-      if(err) res.send(err);
-      else res.status(201).send("Movie added to watchlist!");
+    movieHelper.check_if_movie_exists(loggedInUser, movie, operation);
+    //const me = await User.findOne({ _id: req.body.userId });
+    //const movieWatchlist = loggedInUser.watchlistMovies;
+
+    /*if(!movieWatchlist.includes(movie)) {
+      loggedInUser.watchlistMovies.push(movie);
+      loggedInUser.save(function (err) {
+        if(err) res.send(err);
+        else res.status(201).send("Movie added to watchlist!");
      });
     } else {
       res.status(400).send("Movie already added to watchlist!")
-    }
+    }*/
   } catch (e) {
     res.send(e);
   }
@@ -113,15 +118,15 @@ module.exports.movie_remove_from_watchlist = async (req, res) => {
     const me = await User.findOne({ _id: req.body.userId });
     const movie = req.body.movieId;
     const movieWatchlist = me.watchlistMovies;
-    
+
     if(movieWatchlist.includes(movie)) {
-      me.movieWatchlist.pull(movie);
+      me.watchlistMovies.pull(movie);
       me.save(function (err) {
         if(err) res.send(err);
         else res.status(201).send("Movie removed from watchlist!");
       });
     } else {
-      res.status(400).send("Movie isn't in a watchlist yet!")
+      res.status(400).send("Movie isn't in watchlist yet!")
     }
 
   } catch (e) {
