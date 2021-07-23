@@ -65,21 +65,10 @@ module.exports.movie_add_to_watchlist = async (req, res) => {
   try {
     const loggedInUser = req.body.userId;
     const movie = req.body.movieId;
-    const operation = 1;
 
-    movieHelper.check_if_movie_exists(loggedInUser, movie, operation);
-    //const me = await User.findOne({ _id: req.body.userId });
-    //const movieWatchlist = loggedInUser.watchlistMovies;
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 1);
 
-    /*if(!movieWatchlist.includes(movie)) {
-      loggedInUser.watchlistMovies.push(movie);
-      loggedInUser.save(function (err) {
-        if(err) res.send(err);
-        else res.status(201).send("Movie added to watchlist!");
-     });
-    } else {
-      res.status(400).send("Movie already added to watchlist!")
-    }*/
+    res.send(result);
   } catch (e) {
     res.send(e);
   }
@@ -87,27 +76,12 @@ module.exports.movie_add_to_watchlist = async (req, res) => {
 
 module.exports.movie_add_to_tracked = async (req, res) => {
   try {
-    const me = await User.findOne({ _id: req.body.userId });
+    const loggedInUser = req.body.userId;
     const movie = req.body.movieId;
-    const trackedMovieList = me.trackedMovies;
 
-    //need also make that watchlist and tracked movies are 2 exclusive list
-    //this means that the same movie cannot be in both lists at the same time
-    /***********************************************************************/
-    //we can make something like, if a user wants to add a movie to watchlist
-    //and the movie is in movies tracked list, remove it from that, and add it to
-    //watchlist, same for opposite case
-    /***********************************************************************/
-    //this can also be applied to the function that starts on line 80
-    if(!trackedMovieList.includes(movie)) {
-      me.trackedMovies.push(movie);
-      me.save(function (err) {
-        if(err) res.send(err);
-        else res.status(201).send("Movie marked as watched!");
-      });
-    } else {
-      res.status(400).send("Movie already marked as watched!")
-    }
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 2);
+
+    res.send(result);
   } catch (e) {
     res.send(e);
   }
@@ -115,20 +89,12 @@ module.exports.movie_add_to_tracked = async (req, res) => {
 
 module.exports.movie_remove_from_watchlist = async (req, res) => {
   try {
-    const me = await User.findOne({ _id: req.body.userId });
+    const loggedInUser = req.body.userId;
     const movie = req.body.movieId;
-    const movieWatchlist = me.watchlistMovies;
 
-    if(movieWatchlist.includes(movie)) {
-      me.watchlistMovies.pull(movie);
-      me.save(function (err) {
-        if(err) res.send(err);
-        else res.status(201).send("Movie removed from watchlist!");
-      });
-    } else {
-      res.status(400).send("Movie isn't in watchlist yet!")
-    }
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 3);
 
+    res.send(result);
   } catch (e) {
     res.send(e);
   }
@@ -136,20 +102,12 @@ module.exports.movie_remove_from_watchlist = async (req, res) => {
 
 module.exports.movie_remove_from_tracked = async (req, res) => {
   try {
-    const me = await User.findOne({ _id: req.body.userId });
+    const loggedInUser = req.body.userId;
     const movie = req.body.movieId;
-    const trackedMovieList = me.trackedMovies;
 
-    if(trackedMovieList.includes(movie)) {
-      me.trackedMovies.pull(movie);
-      me.save(function (err) {
-        if(err) res.send(err);
-        else res.status(201).send("Movie removed from watched list!");
-      });
-    } else {
-      res.status(400).send("Movie isn't marked as watched yet!")
-    }
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 4);
 
+    res.send(result);
   } catch (e) {
     res.send(e);
   }

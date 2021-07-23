@@ -4,14 +4,12 @@ module.exports.check_if_movie_exists = async (userId, movie, operation) => {
     const loggedInUser = await User.findById({_id: userId});
     const movieWatchlist = loggedInUser.watchlistMovies;
     const movieTrackedlist = loggedInUser.trackedMovies;
+    let returnString = "";
 
     //1 == add to watchlist
     //2 == add to tracked list
     //3 == remove from watchlist
-    //4 == remove from tracked list   
-    ////////////////////////////////////
-    //replace console.log with return so we 
-    //can return the result (res) when we call this function
+    //4 == remove from tracked list
     /////////////////////////////////////////////////
     //probably replace the ugly code and spread it through
     //multiple functions, e.g. every case has it's own function
@@ -21,12 +19,12 @@ module.exports.check_if_movie_exists = async (userId, movie, operation) => {
                 if(!movieTrackedlist.includes(movie)) {
                     loggedInUser.watchlistMovies.push(movie);
                     loggedInUser.save();
-                    console.log("Movie added to watchlist");
+                    returnString = "Movie added to watchlist";
                 } else {
-                    console.log("Movie is already in another list");
+                    returnString = "Movie is already in another list";
                 }
             } else {
-                console.log("Movie is already in watchlist");
+                returnString = "Movie is already in watchlist";
             }
             break;
         case 2:
@@ -34,31 +32,35 @@ module.exports.check_if_movie_exists = async (userId, movie, operation) => {
                 if(!movieWatchlist.includes(movie)) {
                     loggedInUser.trackedMovies.push(movie);
                     loggedInUser.save();
-                    console.log("Movie added as watched");
+                    returnString = "Movie added as watched";
                 } else {
-                    console.log("Movie is already in another list");
+                    returnString = "Movie is already in another list";
                 }
             } else {
-                console.log("Movie is already marked as watched");
+                returnString = "Movie is already marked as watched";
             }
             break;
         case 3:
             if(movieWatchlist.includes(movie)) {
                 loggedInUser.watchlistMovies.pull(movie);
                 loggedInUser.save();
+                returnString = "Movie removed from watchlist!";
             } else {
-                console.log("Movie is not in the watchlist yet!")
+                returnString = "Movie is not in the watchlist yet!";
             }
             break;
         case 4:
             if(movieTrackedlist.includes(movie)) {
                 loggedInUser.trackedMovies.pull(movie);
                 loggedInUser.save();
+                returnString = "Movie removed from watched!";
             } else {
-                console.log("Movie is not marked as watched yet!")
+                returnString = "Movie is not marked as watched yet!";
             }
             break;
         default:
-            console.log("Something went wrong!");
+            returnString = "Something went wrong!";
     }
+
+    return returnString;
 };
