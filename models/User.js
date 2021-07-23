@@ -34,14 +34,23 @@ const userSchema = mongoose.Schema({
   },
   trackedMovies: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Movie",
+      type: String,
+      
+    },
+  ],
+  watchlistMovies: [
+    {
+      type: String,
     },
   ],
   trackedShows: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Show",
+      type: String,
+    },
+  ],
+  watchlistShows: [
+    {
+      type: String,
     },
   ],
   trackedEpisodes: [

@@ -1,6 +1,8 @@
 const express = require("express");
 const userRoutes = require("./routes/userRoutes");
 const movieRoutes = require("./routes/movieRoutes");
+const searchRoute = require("./routes/searchRoute");
+
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -64,6 +66,7 @@ app.post("/refresh_token", async (req, res) => {
 
 app.use("/users", userRoutes);
 app.use("/movies", movieRoutes);
+app.use("/search", searchRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));
