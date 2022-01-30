@@ -1,34 +1,113 @@
-const Movie = require("../models/Movie");
+require("dotenv").config();
+const User = require("../models/User");
+const MovieDB = require("node-themoviedb");
+const movieHelper = require("../helper/movieHelper");
 
-module.exports.new_movie_post = async (req, res) => {
+const mdb = new MovieDB(process.env.API_KEY)
+
+module.exports.discover_movies_get = async (req, res) => {
   try {
-    const movie = new Movie({
-      title: req.body.title,
-      description: req.body.description,
-      releaseDate: req.body.releaseDate,
-      poster: req.body.poster,
-    });
-
-    const newMovie = await movie.save();
-    res.json(newMovie);
+    const args = {
+      query: {
+        page: req.query.page,
+      }
+    };
+    const discoverMovies = await mdb.discover.movie(args);
+    res.json(discoverMovies);
   } catch (e) {
     res.send(e);
   }
 };
 
-module.exports.all_movies_get = async (_, res) => {
+module.exports.top_movies_get = async (req, res) => {
   try {
-    const allMovies = await Movie.find();
-    res.json(allMovies);
+    const args = {
+      query: {
+        page: req.query.page,
+      },
+    };
+    const popularMovies = await mdb.movie.getTopRated(args);
+    res.json(popularMovies);
   } catch (e) {
     res.send(e);
   }
 };
 
-module.exports.popular_movie_get = async (req, res) => {
+module.exports.popular_movies_get = async (req, res) => {
   try {
-    const allMovies = await Movie.find();
-    res.json(allMovies);
+    const args = {
+      query: {
+        page: req.query.page,
+      },
+    };
+    const popularMovies = await mdb.movie.getPopular(args);
+    res.json(popularMovies);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.movie_info = async (req, res) => {
+  try {
+    const args = {
+      pathParameters: {
+        movie_id: req.query.id,
+      }
+    };
+    const discoverMovies = await mdb.movie.getDetails(args);
+    res.json(discoverMovies);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.movie_add_to_watchlist = async (req, res) => {
+  try {
+    const loggedInUser = req.body.userId;
+    const movie = req.body.movieId;
+
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 1);
+
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.movie_add_to_tracked = async (req, res) => {
+  try {
+    const loggedInUser = req.body.userId;
+    const movie = req.body.movieId;
+
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 2);
+
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.movie_remove_from_watchlist = async (req, res) => {
+  try {
+    const loggedInUser = req.body.userId;
+    const movie = req.body.movieId;
+
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 3);
+
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+};
+
+module.exports.movie_remove_from_tracked = async (req, res) => {
+  try {
+    const loggedInUser = req.body.userId;
+    const movie = req.body.movieId;
+
+    const result = await movieHelper.check_if_movie_exists(loggedInUser, movie, 4);
+
+    res.send(result);
   } catch (e) {
     res.send(e);
   }
